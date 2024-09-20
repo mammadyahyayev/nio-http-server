@@ -41,12 +41,12 @@ public class ConnectionHandler {
       OutputStream outputStream = socket.getOutputStream();
       StringBuilder builder = new StringBuilder();
       builder
-          .append("HTTP/1.1 200 OK")
+          .append(HttpConstants.VERSION).append(" ")
+          .append(HttpStatus.OK.statusWithCode())
           .append(System.lineSeparator())
-          .append("Content-Type: text/plain; charset=utf-8")
+          .append(new HttpHeader(HttpHeaders.CONTENT_TYPE, ContentTypes.TEXT_PLAIN_UTF_8))
           .append(System.lineSeparator())
-          .append("Content-Length: ")
-          .append(HELLO_WORLD_MSG.length())
+          .append(new HttpHeader(HttpHeaders.CONTENT_LENGTH, HELLO_WORLD_MSG.length()))
           .append(System.lineSeparator())
           .append(System.lineSeparator())
           .append(HELLO_WORLD_MSG)
