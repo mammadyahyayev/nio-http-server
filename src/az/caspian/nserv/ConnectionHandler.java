@@ -1,5 +1,8 @@
 package az.caspian.nserv;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
@@ -8,6 +11,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class ConnectionHandler {
+  private static final Log log = LogFactory.getLog(ConnectionHandler.class);
+
   private static final String HELLO_WORLD_MSG = "Hello World!";
 
   private static final List<Socket> SOCKETS = new ArrayList<>();
@@ -23,6 +28,7 @@ public class ConnectionHandler {
   }
 
   public void handleSockets() {
+    log.debug("Handling incoming connections...");
     while (!shouldStop) {
       for (Socket socket : SOCKETS) {
         handleSocket(socket);
