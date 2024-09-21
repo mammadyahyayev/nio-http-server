@@ -2,6 +2,7 @@ package az.caspian.nserv.http;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.lang.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,7 +19,7 @@ public class HttpRequestHandler {
     this.httpRequestListener = httpRequestListener;
   }
 
-  public void handle(String ipAddress, InputStream inputStream) throws IOException {
+  public HttpRequest handle(String ipAddress, InputStream inputStream) throws IOException {
     var request = new StringBuilder();
     var buffer = new byte[1024];
 
@@ -32,9 +33,14 @@ public class HttpRequestHandler {
     log.debug("http request: \n{}", request);
     HttpRequest httpRequest = buildHttpRequest(ipAddress, request.toString());
     httpRequestListener.onRequest(httpRequest);
+    return httpRequest;
   }
 
-  private HttpRequest buildHttpRequest(String ipAddress, String requestMessage) {
+  private @Nullable HttpRequest buildHttpRequest(String ipAddress, String requestMessage) {
+    if (requestMessage.isEmpty()) {
+      return null;
+    }
+
     String[] requestLines = requestMessage.split(HttpConstants.HTTP_LINE_SEPARATOR);
 
     String[] requestLine = requestLines[0].split(" ");

@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -30,12 +31,20 @@ public class ConnectionHandler {
 
   private void handleConnection(Socket socket) {
     try {
-      httpRequestHandler.handle(socket.getInetAddress().getHostAddress(), socket.getInputStream());
-      httpResponseHandler.handle(socket.getOutputStream());
+      HttpRequest request = httpRequestHandler.handle(socket.getInetAddress().getHostAddress(), socket.getInputStream());
+      HttpResponse response = httpResponseHandler.handle(request);
+      sendResponse(response, socket.getOutputStream());
       log.debug("Connection #{} is handled and closed", handledConnectionCount);
     } catch (IOException e) {
       log.error("Error while handling connection: {}", e.getMessage());
     }
+  }
+
+  private void sendResponse(HttpResponse httpResponse, OutputStream outputStream) throws IOException {
+    String output = httpResponse.getOutput();
+    outputStream.write(output.getBytes(), 0, output.length());
+    outputStream.flush();
+    outputStream.close();
   }
 }
 

@@ -28,8 +28,9 @@ public class AccessLogWriter implements HttpRequestListener {
 
   @Override
   public void onRequest(HttpRequest request) {
-    log.debug("Listening on request to write logs to access.log file on path {}", accessLogFilePath);
+    if (request == null) return;
 
+    log.trace("Listening on request to write logs to access.log file on path {}", accessLogFilePath);
     String requestLine = request.getMethod() + " " + request.getPath() + " " + System.getProperty("server.http.version");
     LocalDateTime dateTime = LocalDateTime.now(ZoneOffset.UTC);
     String logLine = constructLogLine(request.getIpAddress(), dateTime, requestLine, request.getUserAgent());
