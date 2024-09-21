@@ -1,15 +1,14 @@
 package az.caspian.nserv;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
-import java.net.Socket;
 
 public class CaspianHttpServer {
-  private static final Log log = LogFactory.getLog(CaspianHttpServer.class);
+  private static final Logger log = LogManager.getLogger();
 
   private final int port;
   private final String host;
@@ -28,20 +27,17 @@ public class CaspianHttpServer {
   }
 
   public void start() {
-    log.info("Starting server on port " + port);
+    log.info("Starting server on port {}", port);
     var connectionHandler = new ConnectionHandler();
 
     try (var serverSocket = new ServerSocket()) {
       serverSocket.setReuseAddress(true);
       serverSocket.bind(new InetSocketAddress(host, port));
-      log.info("Server started on port " + port);
-      Socket connectionSocket = serverSocket.accept();
-      connectionHandler.addSocket(connectionSocket);
+      log.info("Server started on port {}", port);
+      connectionHandler.handleConnections(serverSocket);
     } catch (IOException e) {
-      log.error("Failed to start server: " + e.getMessage());
+      log.error("Failed to start server: {}", e.getMessage());
     }
-
-    connectionHandler.handleSockets();
   }
 
   public void stop() {

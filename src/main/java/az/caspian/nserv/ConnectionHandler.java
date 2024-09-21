@@ -1,42 +1,28 @@
 package az.caspian.nserv;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 public class ConnectionHandler {
-  private static final Log log = LogFactory.getLog(ConnectionHandler.class);
+  private static final Logger log = LogManager.getLogger();
+  private static int handledConnectionCount = 0;
 
   private static final String HELLO_WORLD_MSG = "Hello World!";
 
-  private static final List<Socket> SOCKETS = new ArrayList<>();
-  private boolean shouldStop = false;
-
-  public ConnectionHandler() {
-
-  }
-
-  public void addSocket(Socket socket) {
-    Objects.requireNonNull(socket);
-    SOCKETS.add(socket);
-  }
-
-  public void handleSockets() {
-    log.debug("Handling incoming connections...");
-    while (!shouldStop) {
-      for (Socket socket : SOCKETS) {
-        handleSocket(socket);
-      }
+  public void handleConnections(ServerSocket serverSocket) throws IOException {
+    while (true) {
+      Socket connectionSocket = serverSocket.accept();
+      handleConnection(connectionSocket);
+      handledConnectionCount++;
     }
   }
 
-  private void handleSocket(Socket socket) {
+  private void handleConnection(Socket socket) {
     try {
       OutputStream outputStream = socket.getOutputStream();
       StringBuilder builder = new StringBuilder();
@@ -54,6 +40,7 @@ public class ConnectionHandler {
       outputStream.write(builder.toString().getBytes(), 0, builder.length());
       outputStream.flush();
       outputStream.close();
+      log.debug("Connection #{} is handled and closed", handledConnectionCount);
     } catch (IOException e) {
       // socket is closed
     }
