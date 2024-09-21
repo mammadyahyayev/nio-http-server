@@ -6,6 +6,8 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 public class HttpRequestHandler {
   private static final Logger log = LogManager.getLogger();
@@ -54,7 +56,22 @@ public class HttpRequestHandler {
       throw new IllegalArgumentException("Invalid HTTP method: " + method);
     }
 
-    log.debug("Method: {}\nPath: {}", method, path);
-    return new HttpRequest(ipAddress, method, path);
+    Map<String, String> httpRequestHeaders = buildHttpRequestHeaders(requestLines);
+
+    return new HttpRequest(ipAddress, method, path, httpRequestHeaders);
+  }
+
+  private Map<String, String> buildHttpRequestHeaders(String[] requestLines) {
+    Map<String, String> requestHeaders = new HashMap<>();
+    for (int i = 1; i < requestLines.length; i++) {
+      if (!requestLines[i].equals("\r\n")) {
+        String[] headerSplit = requestLines[i].split(":");
+        String header = headerSplit[0].trim();
+        String value = headerSplit[1];
+        requestHeaders.put(header, value);
+      }
+    }
+
+    return requestHeaders;
   }
 }

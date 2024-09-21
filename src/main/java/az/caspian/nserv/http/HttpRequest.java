@@ -15,6 +15,10 @@ public class HttpRequest {
     this(ipAddress, method, path, new HashMap<>(), null);
   }
 
+  public HttpRequest(String ipAddress, String method, String path, Map<String, String> headers) {
+    this(ipAddress, method, path, headers, null);
+  }
+
   public HttpRequest(String ipAddress, String method, String path, Map<String, String> headers, String body) {
     this.ipAddress = ipAddress;
     this.method = method;
