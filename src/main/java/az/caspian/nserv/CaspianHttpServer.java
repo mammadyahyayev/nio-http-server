@@ -5,12 +5,14 @@ import az.caspian.nserv.connection.ConnectionHandler;
 import az.caspian.nserv.http.HttpConstants;
 import az.caspian.nserv.http.HttpRequestHandler;
 import az.caspian.nserv.http.HttpResponseHandler;
+import az.caspian.nserv.router.RouterDefiner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
+import java.util.ServiceLoader;
 
 public class CaspianHttpServer {
   private static final Logger log = LogManager.getLogger();
@@ -38,9 +40,13 @@ public class CaspianHttpServer {
 
   public void start() {
     log.info("Starting server on port {}", port);
+
+    var loader = ServiceLoader.load(RouterDefiner.class);
+    RouterDefiner routerDefiner = loader.findFirst().orElseThrow();
+
     var connectionHandler = new ConnectionHandler(
         new HttpRequestHandler(new AccessLogWriter()),
-        new HttpResponseHandler()
+        new HttpResponseHandler(routerDefiner)
     );
 
     try (var serverSocket = new ServerSocket()) {
