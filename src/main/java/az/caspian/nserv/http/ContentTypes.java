@@ -1,4 +1,4 @@
-package az.caspian.nserv;
+package az.caspian.nserv.http;
 
 public final class ContentTypes {
   private ContentTypes() {

@@ -1,4 +1,4 @@
-package az.caspian.nserv;
+package az.caspian.nserv.http;
 
 public class HttpHeader {
   private final String header;
