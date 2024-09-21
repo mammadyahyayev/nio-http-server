@@ -35,7 +35,7 @@ public class HttpRequestHandler {
   }
 
   private HttpRequest buildHttpRequest(String ipAddress, String requestMessage) {
-    String[] requestLines = requestMessage.split("\r\n");
+    String[] requestLines = requestMessage.split(HttpConstants.HTTP_LINE_SEPARATOR);
 
     String[] requestLine = requestLines[0].split(" ");
 
@@ -64,8 +64,8 @@ public class HttpRequestHandler {
   private Map<String, String> buildHttpRequestHeaders(String[] requestLines) {
     Map<String, String> requestHeaders = new HashMap<>();
     for (int i = 1; i < requestLines.length; i++) {
-      if (!requestLines[i].equals("\r\n")) {
-        String[] headerSplit = requestLines[i].split(":");
+      if (!requestLines[i].equals(HttpConstants.HTTP_LINE_SEPARATOR)) {
+        String[] headerSplit = requestLines[i].split(HttpConstants.HTTP_HEADER_SEPARATOR);
         String header = headerSplit[0].trim();
         String value = headerSplit[1];
         requestHeaders.put(header, value);
