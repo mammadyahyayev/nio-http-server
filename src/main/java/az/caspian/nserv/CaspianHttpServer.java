@@ -1,5 +1,6 @@
 package az.caspian.nserv;
 
+import az.caspian.nserv.http.HttpConstants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,6 +13,11 @@ public class CaspianHttpServer {
 
   private final int port;
   private final String host;
+  private static final String HTTP_VERSION = HttpConstants.HTTP_1_1;
+
+  static {
+    System.setProperty("server.http.version", HTTP_VERSION);
+  }
 
   public CaspianHttpServer() {
     this(8080, "127.0.0.1");

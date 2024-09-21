@@ -12,7 +12,7 @@ public class HttpResponseHandler {
   public void handle(OutputStream outputStream) throws IOException {
     StringBuilder builder = new StringBuilder();
     builder
-        .append(HttpConstants.VERSION).append(" ")
+        .append(HttpConstants.HTTP_1_1).append(" ")
         .append(HttpStatus.OK.statusWithCode())
         .append(System.lineSeparator())
         .append(new HttpHeader(HttpHeaders.CONTENT_TYPE, ContentTypes.TEXT_PLAIN_UTF_8))

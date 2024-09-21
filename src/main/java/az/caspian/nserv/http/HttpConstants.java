@@ -5,5 +5,5 @@ public final class HttpConstants {
 
   }
 
-  public static final String VERSION = "HTTP/1.1";
+  public static final String HTTP_1_1 = "HTTP/1.1";
 }
