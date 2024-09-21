@@ -1,8 +1,5 @@
-package az.caspian.nserv;
+package az.caspian.nserv.http;
 
-import az.caspian.nserv.http.HttpConstants;
-import az.caspian.nserv.http.HttpRequest;
-import az.caspian.nserv.http.HttpRequestValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -13,7 +10,13 @@ import java.text.MessageFormat;
 public class HttpRequestHandler {
   private static final Logger log = LogManager.getLogger();
 
-  public void handle(InputStream inputStream) throws IOException {
+  private final HttpRequestListener httpRequestListener;
+
+  public HttpRequestHandler(HttpRequestListener httpRequestListener) {
+    this.httpRequestListener = httpRequestListener;
+  }
+
+  public void handle(String ipAddress, InputStream inputStream) throws IOException {
     var request = new StringBuilder();
     var buffer = new byte[1024];
 
@@ -25,10 +28,11 @@ public class HttpRequestHandler {
     }
 
     log.debug("http request: \n{}", request);
-    buildHttpRequest(request.toString());
+    HttpRequest httpRequest = buildHttpRequest(ipAddress, request.toString());
+    httpRequestListener.onRequest(httpRequest);
   }
 
-  private HttpRequest buildHttpRequest(String requestMessage) {
+  private HttpRequest buildHttpRequest(String ipAddress, String requestMessage) {
     String[] requestLines = requestMessage.split("\r\n");
 
     String[] requestLine = requestLines[0].split(" ");
@@ -51,6 +55,6 @@ public class HttpRequestHandler {
     }
 
     log.debug("Method: {}\nPath: {}", method, path);
-    return new HttpRequest(method, path);
+    return new HttpRequest(ipAddress, method, path);
   }
 }

@@ -1,6 +1,10 @@
 package az.caspian.nserv;
 
+import az.caspian.nserv.connection.AccessLogWriter;
+import az.caspian.nserv.connection.ConnectionHandler;
 import az.caspian.nserv.http.HttpConstants;
+import az.caspian.nserv.http.HttpRequestHandler;
+import az.caspian.nserv.http.HttpResponseHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,7 +38,10 @@ public class CaspianHttpServer {
 
   public void start() {
     log.info("Starting server on port {}", port);
-    var connectionHandler = new ConnectionHandler(new HttpRequestHandler(), new HttpResponseHandler());
+    var connectionHandler = new ConnectionHandler(
+        new HttpRequestHandler(new AccessLogWriter()),
+        new HttpResponseHandler()
+    );
 
     try (var serverSocket = new ServerSocket()) {
       serverSocket.setReuseAddress(true);

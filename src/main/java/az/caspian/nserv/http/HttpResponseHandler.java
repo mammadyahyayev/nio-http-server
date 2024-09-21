@@ -1,6 +1,4 @@
-package az.caspian.nserv;
-
-import az.caspian.nserv.http.*;
+package az.caspian.nserv.http;
 
 import java.io.IOException;
 import java.io.OutputStream;

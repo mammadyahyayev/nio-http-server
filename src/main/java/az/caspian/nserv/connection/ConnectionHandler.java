@@ -1,12 +1,10 @@
-package az.caspian.nserv;
+package az.caspian.nserv.connection;
 
 import az.caspian.nserv.http.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -32,11 +30,10 @@ public class ConnectionHandler {
 
   private void handleConnection(Socket socket) {
     try {
-      httpRequestHandler.handle(socket.getInputStream());
+      httpRequestHandler.handle(socket.getInetAddress().getHostAddress(), socket.getInputStream());
       httpResponseHandler.handle(socket.getOutputStream());
       log.debug("Connection #{} is handled and closed", handledConnectionCount);
     } catch (IOException e) {
-      // socket is closed
       log.error("Error while handling connection: {}", e.getMessage());
     }
   }
