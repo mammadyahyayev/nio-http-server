@@ -28,7 +28,7 @@ public class CaspianHttpServer {
 
   public void start() {
     log.info("Starting server on port {}", port);
-    var connectionHandler = new ConnectionHandler();
+    var connectionHandler = new ConnectionHandler(new HttpRequestHandler(), new HttpResponseHandler());
 
     try (var serverSocket = new ServerSocket()) {
       serverSocket.setReuseAddress(true);

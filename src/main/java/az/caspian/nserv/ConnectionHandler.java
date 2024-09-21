@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -13,7 +14,13 @@ public class ConnectionHandler {
   private static final Logger log = LogManager.getLogger();
   private static int handledConnectionCount = 0;
 
-  private static final String HELLO_WORLD_MSG = "Hello World!";
+  private final HttpRequestHandler httpRequestHandler;
+  private final HttpResponseHandler httpResponseHandler;
+
+  public ConnectionHandler(HttpRequestHandler httpRequestHandler, HttpResponseHandler httpResponseHandler) {
+    this.httpRequestHandler = httpRequestHandler;
+    this.httpResponseHandler = httpResponseHandler;
+  }
 
   public void handleConnections(ServerSocket serverSocket) throws IOException {
     while (true) {
@@ -25,25 +32,12 @@ public class ConnectionHandler {
 
   private void handleConnection(Socket socket) {
     try {
-      OutputStream outputStream = socket.getOutputStream();
-      StringBuilder builder = new StringBuilder();
-      builder
-          .append(HttpConstants.VERSION).append(" ")
-          .append(HttpStatus.OK.statusWithCode())
-          .append(System.lineSeparator())
-          .append(new HttpHeader(HttpHeaders.CONTENT_TYPE, ContentTypes.TEXT_PLAIN_UTF_8))
-          .append(System.lineSeparator())
-          .append(new HttpHeader(HttpHeaders.CONTENT_LENGTH, HELLO_WORLD_MSG.length()))
-          .append(System.lineSeparator())
-          .append(System.lineSeparator())
-          .append(HELLO_WORLD_MSG)
-          .append(System.lineSeparator());
-      outputStream.write(builder.toString().getBytes(), 0, builder.length());
-      outputStream.flush();
-      outputStream.close();
+      httpRequestHandler.handle(socket.getInputStream());
+      httpResponseHandler.handle(socket.getOutputStream());
       log.debug("Connection #{} is handled and closed", handledConnectionCount);
     } catch (IOException e) {
       // socket is closed
+      log.error("Error while handling connection: {}", e.getMessage());
     }
   }
 }
