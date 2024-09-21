@@ -8,4 +8,6 @@ public final class HttpConstants {
 
   public static final String HTTP_LINE_SEPARATOR = "\r\n";
   public static final String HTTP_HEADER_SEPARATOR = ":";
+
+  public static final String DEFAULT_STATIC_CONTENT_PATH = "www";
 }

@@ -1,28 +1,28 @@
 package az.caspian.nserv.http;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import az.caspian.nserv.io.HtmlFileReader;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.nio.file.Path;
 
 public class HttpResponseHandler {
+  private static final Logger log = LogManager.getLogger(HttpResponseHandler.class);
 
-  private static final String HELLO_WORLD_MSG = "Hello World!";
+  public HttpResponse handle(HttpRequest httpRequest) {
+    String htmlFileName;
+    if (httpRequest == null) {
+      htmlFileName = "404.html";
+    } else {
+      final String requestPath = httpRequest.getPath();
+      htmlFileName = switch (requestPath) {
+        case "/" -> "index.html";
+        case "/students" -> "students.html";
+        default -> "404.html";
+      };
+    }
 
-  public void handle(OutputStream outputStream) throws IOException {
-    StringBuilder builder = new StringBuilder();
-    builder
-        .append(HttpConstants.HTTP_1_1).append(" ")
-        .append(HttpStatus.OK.statusWithCode())
-        .append(System.lineSeparator())
-        .append(new HttpHeader(HttpHeaders.CONTENT_TYPE, ContentTypes.TEXT_PLAIN_UTF_8))
-        .append(System.lineSeparator())
-        .append(new HttpHeader(HttpHeaders.CONTENT_LENGTH, HELLO_WORLD_MSG.length()))
-        .append(System.lineSeparator())
-        .append(System.lineSeparator())
-        .append(HELLO_WORLD_MSG)
-        .append(System.lineSeparator());
-    outputStream.write(builder.toString().getBytes(), 0, builder.length());
-    outputStream.flush();
-    outputStream.close();
+    String content = HtmlFileReader.readFile(Path.of(HttpConstants.DEFAULT_STATIC_CONTENT_PATH, htmlFileName));
+    return new HttpResponse(HttpStatus.OK, ContentTypes.TEXT_HTML, content);
   }
-
 }
