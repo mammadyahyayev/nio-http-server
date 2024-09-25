@@ -41,7 +41,7 @@ public class ConnectionHandler {
       HttpResponse response = httpResponseHandler.handle(request);
       requestListener.onRequest(request, response);
       sendResponse(response, socket.getOutputStream());
-      log.debug("Connection #{} is handled and closed", handledConnectionCount);
+      log.trace("Connection #{} is handled and closed", handledConnectionCount);
     } catch (IOException e) {
       log.error("Error while handling connection: {}", e.getMessage());
     }

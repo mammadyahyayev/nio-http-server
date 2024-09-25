@@ -39,7 +39,7 @@ public class CaspianHttpServer {
   }
 
   public void start() {
-    log.info("Starting server on port {}", port);
+    log.debug("Starting server on port {}", port);
 
     var loader = ServiceLoader.load(RouterDefiner.class);
     RouterDefiner routerDefiner = loader.findFirst().orElseThrow();
@@ -53,7 +53,7 @@ public class CaspianHttpServer {
     try (var serverSocket = new ServerSocket()) {
       serverSocket.setReuseAddress(true);
       serverSocket.bind(new InetSocketAddress(host, port));
-      log.info("Server started on port {}", port);
+      log.debug("Server started on port {}", port);
       connectionHandler.handleConnections(serverSocket);
     } catch (IOException e) {
       log.error("Failed to start server: {}", e.getMessage());

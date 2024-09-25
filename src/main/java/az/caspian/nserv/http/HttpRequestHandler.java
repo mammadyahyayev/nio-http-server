@@ -19,12 +19,12 @@ public class HttpRequestHandler {
 
     while (inputStream.available() != 0) {
       int read = inputStream.read(buffer);
-      log.debug("bytes read: {}", read);
-      log.debug("available buffer size: {}", buffer.length - read);
+      log.trace("bytes read: {}", read);
+      log.trace("available buffer size: {}", buffer.length - read);
       request.append(new String(buffer, 0, read));
     }
 
-    log.debug("http request: \n{}", request);
+    log.trace("http request: \n{}", request);
     return buildHttpRequest(ipAddress, request.toString());
   }
 
