@@ -45,8 +45,9 @@ public class CaspianHttpServer {
     RouterDefiner routerDefiner = loader.findFirst().orElseThrow();
 
     var connectionHandler = new ConnectionHandler(
-        new HttpRequestHandler(new AccessLogWriter()),
-        new HttpResponseHandler(routerDefiner)
+      new HttpRequestHandler(),
+      new HttpResponseHandler(routerDefiner),
+      new AccessLogWriter()
     );
 
     try (var serverSocket = new ServerSocket()) {

@@ -2,6 +2,7 @@ package az.caspian.nserv.connection;
 
 import az.caspian.nserv.http.HttpRequest;
 import az.caspian.nserv.http.HttpRequestListener;
+import az.caspian.nserv.http.HttpResponse;
 import az.caspian.nserv.io.FileWriter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,16 +28,29 @@ public class AccessLogWriter implements HttpRequestListener {
   }
 
   @Override
-  public void onRequest(HttpRequest request) {
+  public void onRequest(HttpRequest request, HttpResponse response) {
     if (request == null) return;
 
     log.trace("Listening on request to write logs to access.log file on path {}", accessLogFilePath);
     String requestLine = request.getMethod() + " " + request.getPath() + " " + System.getProperty("server.http.version");
     LocalDateTime dateTime = LocalDateTime.now(ZoneOffset.UTC);
-    String logLine = constructLogLine(request.getIpAddress(), dateTime, requestLine, request.getUserAgent());
+    String logLine = constructLogLine(
+      request.getIpAddress(),
+      dateTime,
+      requestLine,
+      request.getUserAgent(),
+      response.getStatus(),
+      response.getBodySize()
+    );
     FileWriter.writeLine(accessLogFilePath, logLine);
   }
 
+  /**
+   * Combines multiple arguments together with '--' symbol.
+   *
+   * @param args arguments of Log
+   * @return a line combination of arguments separated by '--' symbol
+   */
   private String constructLogLine(Object... args) {
     StringBuilder logLine = new StringBuilder();
     for (int i = 0; i < args.length; i++) {

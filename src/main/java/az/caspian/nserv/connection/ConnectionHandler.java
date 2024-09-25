@@ -15,10 +15,16 @@ public class ConnectionHandler {
 
   private final HttpRequestHandler httpRequestHandler;
   private final HttpResponseHandler httpResponseHandler;
+  private final HttpRequestListener requestListener;
 
-  public ConnectionHandler(HttpRequestHandler httpRequestHandler, HttpResponseHandler httpResponseHandler) {
+  public ConnectionHandler(
+    HttpRequestHandler httpRequestHandler,
+    HttpResponseHandler httpResponseHandler,
+    HttpRequestListener requestListener
+  ) {
     this.httpRequestHandler = httpRequestHandler;
     this.httpResponseHandler = httpResponseHandler;
+    this.requestListener = requestListener;
   }
 
   public void handleConnections(ServerSocket serverSocket) throws IOException {
@@ -33,6 +39,7 @@ public class ConnectionHandler {
     try {
       HttpRequest request = httpRequestHandler.handle(socket.getInetAddress().getHostAddress(), socket.getInputStream());
       HttpResponse response = httpResponseHandler.handle(request);
+      requestListener.onRequest(request, response);
       sendResponse(response, socket.getOutputStream());
       log.debug("Connection #{} is handled and closed", handledConnectionCount);
     } catch (IOException e) {

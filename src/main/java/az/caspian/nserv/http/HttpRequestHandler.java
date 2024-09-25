@@ -13,12 +13,6 @@ import java.util.Map;
 public class HttpRequestHandler {
   private static final Logger log = LogManager.getLogger();
 
-  private final HttpRequestListener httpRequestListener;
-
-  public HttpRequestHandler(HttpRequestListener httpRequestListener) {
-    this.httpRequestListener = httpRequestListener;
-  }
-
   public HttpRequest handle(String ipAddress, InputStream inputStream) throws IOException {
     var request = new StringBuilder();
     var buffer = new byte[1024];
@@ -31,9 +25,7 @@ public class HttpRequestHandler {
     }
 
     log.debug("http request: \n{}", request);
-    HttpRequest httpRequest = buildHttpRequest(ipAddress, request.toString());
-    httpRequestListener.onRequest(httpRequest);
-    return httpRequest;
+    return buildHttpRequest(ipAddress, request.toString());
   }
 
   private @Nullable HttpRequest buildHttpRequest(String ipAddress, String requestMessage) {
