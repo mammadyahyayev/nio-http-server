@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class HttpResponseHandler {
   private static final Logger log = LogManager.getLogger(HttpResponseHandler.class);
@@ -33,6 +34,15 @@ public class HttpResponseHandler {
   }
 
   private String findFilenameByRouter(String requestPath, List<Router> routers) {
+    if (requestPath.equals("/students")) {
+      try {
+        Thread.sleep(TimeUnit.SECONDS.toMillis(30));
+        log.info("Thread {} sleep is over", Thread.currentThread().getName());
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
+
     for (Router router : routers) {
       if (router.path().equals(requestPath)) {
         return router.response();
