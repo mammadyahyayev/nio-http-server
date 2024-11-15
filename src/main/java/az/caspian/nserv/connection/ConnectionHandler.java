@@ -11,12 +11,18 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class ConnectionHandler {
   private static final Logger log = LogManager.getLogger();
 
   private static final AtomicInteger availableThreadCount = new AtomicInteger(0);
   private static final ConcurrentLinkedQueue<Socket> connectionSockets = new ConcurrentLinkedQueue<>();
+
+  private final Lock lock = new ReentrantLock();
+  private final Condition notEmpty = lock. newCondition();
 
   private final HttpRequestHandler httpRequestHandler;
   private final HttpResponseHandler httpResponseHandler;
@@ -25,14 +31,18 @@ public class ConnectionHandler {
   {
     while (HttpServerConfig.MAX_THREAD_COUNT >= availableThreadCount.get()) {
       var thread = new Thread(() -> {
-        Thread currentThread = Thread.currentThread();
-        log.debug("{} is created and {} connections are waiting", currentThread.getName(), connectionSockets.size());
-        while (true) {
-          Socket socket = connectionSockets.poll();
-          if (socket != null) {
-            log.debug("{} is polling connection socket to handle", currentThread.getName());
-            handleConnection(socket);
-          }
+        lock.lock();
+        String currentThreadName = Thread.currentThread().getName();
+        log.debug("{} is created and {} connections are waiting", currentThreadName, connectionSockets.size());
+        try {
+          notEmpty.await();
+        } catch (InterruptedException e) {
+          throw new RuntimeException(e);
+        }
+        Socket socket = connectionSockets.poll();
+        if (socket != null) {
+          log.debug("{} is polling connection socket to handle", currentThreadName);
+          handleConnection(socket);
         }
       });
       thread.start();
@@ -54,6 +64,7 @@ public class ConnectionHandler {
     while (true) {
       Socket connectionSocket = serverSocket.accept();
       connectionSockets.add(connectionSocket);
+      notEmpty.signalAll();
     }
   }
 
