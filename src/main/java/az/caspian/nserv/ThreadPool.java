@@ -2,7 +2,6 @@ package az.caspian.nserv;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
 
 public class ThreadPool {
 
@@ -16,7 +15,6 @@ public class ThreadPool {
   public void init() {
     while (HttpServerConfig.MAX_THREAD_COUNT >= availableThreadCount) {
       var thread = new Thread();
-      Executors.newFixedThreadPool(3);
       THREADS.add(thread);
     }
   }

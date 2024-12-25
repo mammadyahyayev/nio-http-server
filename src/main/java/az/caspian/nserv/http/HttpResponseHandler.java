@@ -39,7 +39,7 @@ public class HttpResponseHandler {
         Thread.sleep(TimeUnit.SECONDS.toMillis(30));
         log.info("Thread {} sleep is over", Thread.currentThread().getName());
       } catch (InterruptedException e) {
-        e.printStackTrace();
+        log.error("Thread {} interrupted", Thread.currentThread().getName());
       }
     }
 
